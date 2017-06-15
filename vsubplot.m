@@ -1,9 +1,16 @@
-function theAxis = vsubplot(varargin)
+function [theAxis, vertInd, horzInd] = vsubplot(varargin)
 %% vsubplot
 % Author: Erik Roberts
 %
 % Purpose: Subplot with index increasing vertically instead of horizontally. You can pass 
 %   the normal subplot varargin.
+%
+% Usage: [theAxis, vertInd, horzInd] = vsubplot(varargin)
+%
+% Output:
+%   theAxis: axis output from subplot
+%   vertInd: vertical index
+%   horzInd: horizontal index
 
 rows = varargin{1};
 cols = varargin{2};

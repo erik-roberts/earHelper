@@ -2,7 +2,7 @@ function x = setDefault(varStr, value)
 %% setDefault
 % Author: Erik Roberts
 %
-% Purpose: sets default value for variable. sets to value if empty.
+% Purpose: sets default value for variable if doesn't exist. sets to value if empty.
 %
 % Usage: variable = setDefault(varStr, value)
 %
