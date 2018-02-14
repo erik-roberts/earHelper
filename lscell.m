@@ -11,6 +11,8 @@ function dirList = lscell(arg, removePathBool, recursiveBool)
 % Inputs (optional):
 %   arg: argument to ls
 %   removePathBool: logical of whether to remove the path before the files/dirs
+%
+% Note: paths cannot have spaces
 
 % args
 if nargin < 2 || isempty(removePathBool)
@@ -40,6 +42,7 @@ else % recursiveBool
   if (ismac || isunix)
     [~, dirList] = system(['find ' arg{:}]);
   elseif ispc
+    warning('Recursive not implemented for windows.')
   end
 end
 

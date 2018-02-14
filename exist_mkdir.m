@@ -6,7 +6,8 @@ function exist_mkdir(directoryPath)
 %
 % Usage: exist_mkdir(directoryPath)
 
-    if ~exist(directoryPath, 'dir')
-        mkdir(directoryPath);
-    end
+if ~exist(directoryPath, 'dir')
+  mkdir(directoryPath);
+end
+
 end
