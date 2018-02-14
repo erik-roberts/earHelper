@@ -14,6 +14,10 @@ function dirList = lscell(arg, removePathBool, relativePathBool)
 %   removePathBool: logical whether to remove the path before the files/dirs (default=true)
 %   relativePathBool: logical whether to convert absolute paths to relative paths (default=false)
 %
+% Output:
+%   dirList: cellstr list of arg contents from dir. Paths to folders never
+%   end in trailing filesep, i.e. '/' or '\'.
+%
 % Tips: in order to search subdirectories, use the '**' glob character in the arg
 %
 % See also: DIR
@@ -55,10 +59,24 @@ for k = 1:nFiles
   dirList{k} = fullfile(dirListS(k).folder, dirListS(k).name);
 end
 
+if ispc
+  % remove extra cells with '..'
+  dirList(~cellfun(@isempty, regexp(dirList, '\.\.$'))) = [];
+
+  % remove trailing period and filesep from dirs
+  dirList = regexprep(dirList, '\\\.$', '');
+end
+
 % dirList is cellstr with absolute paths
 
 if relativePathBool && ~removePathBool
-  dirList = regexprep(dirList, ['^' pwd filesep], '');
+  regexStr = ['^' pwd filesep];
+  if isunix || ismac
+    dirList = regexprep(dirList, regexStr, '');
+  else
+    regexStr = strrep(regexStr, '\', '\\');
+    dirList = regexprep(dirList, regexStr, '');
+  end
 end
 
 % dirList is cellstr with absolute paths, or relative paths starting with name
@@ -67,7 +85,7 @@ if removePathBool
   dirList = cellfun(@removePath, dirList, 'Uni',0);
 end
   
-  % sub functions
+  % nested functions
   function thisFilename = removePath(thisPath)
     [~,name,ext] = fileparts(thisPath);
     thisFilename = [name,ext];
