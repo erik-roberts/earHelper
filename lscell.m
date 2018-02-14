@@ -11,8 +11,6 @@ function dirList = lscell(arg, removePathBool, recursiveBool)
 % Inputs (optional):
 %   arg: argument to ls
 %   removePathBool: logical of whether to remove the path before the files/dirs
-%
-% Note: paths cannot have spaces
 
 % args
 if nargin < 2 || isempty(removePathBool)
@@ -28,7 +26,10 @@ if ~nargin || isempty(arg)
     arg = {'.'};
   end
 else
-  arg = {arg};
+  % make cell
+  if ~iscell(arg)
+    arg = {arg};
+  end
 end
   
 if ~recursiveBool
@@ -47,7 +48,7 @@ else % recursiveBool
 end
 
 if (ismac || isunix)
-  dirList = strsplit(dirList);
+  dirList = strsplit(dirList, '[^ \S]', 'DelimiterType', 'RegularExpression');
   if isempty(dirList{end})
     dirList(end) = [];
   end
