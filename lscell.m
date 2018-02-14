@@ -32,6 +32,11 @@ end
 % get dir contents
 dirListS = dir(arg);
 
+if isempty(dirListS)
+  dirList = {};
+  return
+end
+
 % remove first period
 if strcmp(dirListS(1).name, '.')
   dirListS(1) = [];
