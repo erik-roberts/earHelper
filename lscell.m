@@ -1,6 +1,6 @@
 function dirList = lscell(arg, removePathBool, relativePathBool)
 %% lscell
-% Author: Erik Roberts
+% Author: Erik Roberts, 2018
 %
 % Purpose: returns cell matrix of strings with results from call to dir
 %
@@ -13,14 +13,17 @@ function dirList = lscell(arg, removePathBool, relativePathBool)
 %   arg: argument to dir
 %   removePathBool: logical whether to remove the path before the files/dirs (default=true)
 %   relativePathBool: logical whether to convert absolute paths to relative paths (default=false)
+%                     if removePathBool== true, this is ignored.
 %
 % Output:
 %   dirList: cellstr list of arg contents from dir. Paths to folders never
-%   end in trailing filesep, i.e. '/' or '\'.
+%            end in trailing filesep, i.e. '/' or '\'.
 %
 % Tips: in order to search subdirectories, use the '**' glob character in the arg
 %
 % See also: DIR
+
+% Dev Note: checked on Mac OS 10.12, Windows 10, Linux with Matlab 2017b
 
 % parse args
 if ~nargin || isempty(arg)
