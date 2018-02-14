@@ -42,6 +42,16 @@ if ~recursiveBool
 else % recursiveBool
   if (ismac || isunix)
     [~, dirList] = system(['find ' arg{:}]);
+    
+    % remove first period
+    if strcmp(dirList{1}, '.')
+      dirList(1) = [];
+    end
+    
+    % remove trailing empty
+    if isempty(dirList{end})
+      dirList(end) = [];
+    end
   elseif ispc
     warning('Recursive not implemented for windows.')
   end
