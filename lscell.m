@@ -59,13 +59,18 @@ for k = 1:nFiles
   dirList{k} = fullfile(dirListS(k).folder, dirListS(k).name);
 end
 
-if ispc
-  % remove extra cells with '..'
+% remove extra cells with '..'
   dirList(~cellfun(@isempty, regexp(dirList, '\.\.$'))) = [];
 
-  % remove trailing period and filesep from dirs
+% remove trailing period and filesep from dirs
+if isunix || ismac
+  dirList = regexprep(dirList, '/\.$', '');
+else
   dirList = regexprep(dirList, '\\\.$', '');
 end
+
+% remove duplicated absolute paths from glob
+dirList = unique(dirList);
 
 % dirList is cellstr with absolute paths
 
