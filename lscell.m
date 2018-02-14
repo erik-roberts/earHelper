@@ -1,16 +1,18 @@
-function dirList = lscell(arg, removePathBool, recursiveBool)
+function dirList = lscell(arg, removePathBool, recursiveBool, relativePathBool)
 %% lscell
 % Author: Erik Roberts
 %
-% Purpose: returns cell matrix of strings with results from call to ls/dir
+% Purpose: returns cell matrix of strings with results from call to dir
 %
 % Usage: dirList = lscell()
 %        dirList = lscell(arg)
 %        dirList = lscell(arg, removePathBool)
 %
 % Inputs (optional):
-%   arg: argument to ls
-%   removePathBool: logical of whether to remove the path before the files/dirs
+%   arg: argument to dir
+%   removePathBool: logical whether to remove the path before the files/dirs (default=true)
+%   recursiveBool: logical whether to find contents of subdirectories (default=false)
+%   relativePathBool: logical whether to convert absolute paths to relative paths (default=false)
 
 % args
 if nargin < 2 || isempty(removePathBool)
@@ -19,29 +21,51 @@ end
 if nargin < 3 || isempty(recursiveBool)
   recursiveBool = false; %defaults to false
 end
+if nargin < 4 || isempty(relativePathBool)
+  relativePathBool = false; %defaults to false
+end
 if ~nargin || isempty(arg)
-  if ~recursiveBool
-    arg = {};
-  else
-    arg = {'.'};
-  end
-else
-  % make cell
-  if ~iscell(arg)
-    arg = {arg};
-  end
+  arg = '.';
 end
   
 if ~recursiveBool
   try
-    dirList = ls(arg{:});
+    dirListS = dir(arg);
+    
+    % remove first period
+    if strcmp(dirListS(1).name, '.')
+      dirListS(1) = [];
+    end
+    
+    % remove double period
+    if strcmp(dirListS(1).name, '..')
+      dirListS(1) = [];
+    end
+    
+    nFiles = length(dirListS);
+    
+    % convert struct to cellstr
+    dirList = cell(nFiles,1);
+    for k = 1:nFiles
+      dirList{k} = fullfile(dirListS(k).folder, dirListS(k).name);
+    end
+    
+    % dirList is cellstr with absolute paths
+    
+    if relativePathBool && ~removePathBool
+      dirList = regexprep(dirList, ['^' pwd filesep], '');
+    end
+    
+    % dirList is cellstr with absolute paths, or relative paths starting with name
   catch % no arg files found
     dirList = {};
     return
   end
 else % recursiveBool
   if (ismac || isunix)
-    [~, dirList] = system(['find ' arg{:}]);
+    [~, dirList] = system(['find ' arg]);
+    dirList = strsplit(dirList, '[^ \S]', 'DelimiterType', 'RegularExpression');
+    dirList = dirList(:); % make col
     
     % remove first period
     if strcmp(dirList{1}, '.')
@@ -52,37 +76,32 @@ else % recursiveBool
     if isempty(dirList{end})
       dirList(end) = [];
     end
+    
+    % dirList is cellstr with relative paths starting with './'
+    
+    % fix paths
+    if relativePathBool && ~removePathBool
+      % remove relative path starting './'
+      dirList = regexprep(dirList, ['^.' filesep], '');
+      
+    elseif ~relativePathBool && ~removePathBool
+      % convert relative paths to abs paths
+      dirList = regexprep(dirList, ['^.' filesep], [pwd filesep]);
+    end
+    
+    % dirList is cellstr with absolute paths, or relative paths starting with name
   elseif ispc
     warning('Recursive not implemented for windows.')
   end
 end
 
-if (ismac || isunix)
-  dirList = strsplit(dirList, '[^ \S]', 'DelimiterType', 'RegularExpression');
-  if isempty(dirList{end})
-    dirList(end) = [];
-  end
-elseif ispc
-  dirList = cellstr(dirList);
-  if strcmp(dirList{1},'.')
-    dirList(1:2) = []; %remove leading . and ..
-  end
-end
-
-if isempty(dirList) || isempty(dirList{1})
-  dirList = {};
-end
-
-if exist('removePathBool','var') && removePathBool
-  dirList = removePath(dirList);
+if removePathBool
+  dirList = cellfun(@removePath, dirList, 'Uni',0);
 end
   
   % sub functions
-  function dirList = removePath(dirList)
-    for k = 1:length(dirList)
-      thisDir = dirList{k};
-      [~,name,ext] = fileparts(thisDir);
-      dirList{k} = [name,ext];
-    end
+  function thisFilename = removePath(thisPath)
+    [~,name,ext] = fileparts(thisPath);
+    thisFilename = [name,ext];
   end
 end
