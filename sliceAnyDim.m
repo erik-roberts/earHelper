@@ -13,6 +13,11 @@ function x = sliceAnyDim(x, ind, dim)
 
 Index(1:ndims(x)) = {':'};
 Index{dim} = ind;
-x = x(Index{:});
+
+if ischar(ind)
+  x = eval(['x(', strjoin(Index, ', '), ')']);
+else
+  x = x(Index{:});
+end
 
 end
