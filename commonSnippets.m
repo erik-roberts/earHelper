@@ -1,1 +1,1 @@
-disp('axes = findobj(h.Children,''type'',''axes'');')
+disp('ax = findobj(h.Children,''type'',''axes''); % getAxChildren()')
