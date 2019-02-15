@@ -103,7 +103,7 @@ ah = axes(fh, 'pos',[0 1 1 1],'visible','off','Tag','suptitle');
 ht=text(ah, .5,titleypos-1,str);
 set(ht,'horizontalalignment','center','fontsize',fs);
 set(fh,'nextplot',np);
-axes(haold);
+set(fh, 'CurrentAxes', haold);
 if nargout
     hout=ht;
 end
