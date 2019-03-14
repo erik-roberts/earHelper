@@ -16,7 +16,7 @@ if ~exist('handle','var')
 end
 
 originalSize = get(handle, 'Position');
-colorbar;
+colorbar('peer',handle, 'EastOutside');
 set(handle, 'Position', originalSize);
 
 end
