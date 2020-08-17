@@ -15,6 +15,8 @@ if isempty(obj)
     str = '[]';
   elseif iscell(obj)
     str = '{}';
+  elseif ischar(obj)
+    str = 'aschar()';
   end
 elseif isstruct(obj) && isempty( fieldnames(obj) )
   str = 'struct()';
